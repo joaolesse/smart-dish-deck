@@ -1,9 +1,4 @@
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-} from "@/components/ui/dialog";
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Download, X } from "lucide-react";
 import { ReceiptInfo } from "./ReceiptInfoForm";
@@ -13,7 +8,6 @@ import { Expense } from "./ExpensesForm";
 import { AdvanceData } from "./AdvanceForm";
 import { TabType } from "./TabNavigation";
 import logoGuicheWeb from "@/assets/logo-guiche-web.png";
-
 interface ReceiptPreviewProps {
   open: boolean;
   onClose: () => void;
@@ -25,41 +19,31 @@ interface ReceiptPreviewProps {
   expenses: Expense[];
   advanceData: AdvanceData;
 }
-
 const formatCurrency = (value: number): string => {
   return value.toLocaleString("pt-BR", {
     minimumFractionDigits: 2,
-    maximumFractionDigits: 2,
+    maximumFractionDigits: 2
   });
 };
-
 const formatDate = (dateStr: string): string => {
   if (!dateStr) return "";
   const date = new Date(dateStr + "T00:00:00");
   return date.toLocaleDateString("pt-BR");
 };
-
 const formatDateExtended = (dateStr: string): string => {
   if (!dateStr) return "";
   const date = new Date(dateStr + "T00:00:00");
-  const months = [
-    "Janeiro", "Fevereiro", "Março", "Abril", "Maio", "Junho",
-    "Julho", "Agosto", "Setembro", "Outubro", "Novembro", "Dezembro"
-  ];
+  const months = ["Janeiro", "Fevereiro", "Março", "Abril", "Maio", "Junho", "Julho", "Agosto", "Setembro", "Outubro", "Novembro", "Dezembro"];
   return `${date.getDate()} de ${months[date.getMonth()]} de ${date.getFullYear()}`;
 };
-
 const numberToWords = (num: number): string => {
   const units = ["", "um", "dois", "três", "quatro", "cinco", "seis", "sete", "oito", "nove"];
   const teens = ["dez", "onze", "doze", "treze", "quatorze", "quinze", "dezesseis", "dezessete", "dezoito", "dezenove"];
   const tens = ["", "", "vinte", "trinta", "quarenta", "cinquenta", "sessenta", "setenta", "oitenta", "noventa"];
   const hundreds = ["", "cento", "duzentos", "trezentos", "quatrocentos", "quinhentos", "seiscentos", "setecentos", "oitocentos", "novecentos"];
-
   if (num === 0) return "zero";
   if (num === 100) return "cem";
-
   let words = "";
-  
   if (num >= 1000) {
     const thousands = Math.floor(num / 1000);
     if (thousands === 1) {
@@ -70,42 +54,34 @@ const numberToWords = (num: number): string => {
     num %= 1000;
     if (num > 0) words += " e ";
   }
-  
   if (num >= 100) {
     words += hundreds[Math.floor(num / 100)];
     num %= 100;
     if (num > 0) words += " e ";
   }
-  
   if (num >= 20) {
     words += tens[Math.floor(num / 10)];
     num %= 10;
     if (num > 0) words += " e ";
   }
-  
   if (num >= 10) {
     words += teens[num - 10];
     num = 0;
   }
-  
   if (num > 0) {
     words += units[num];
   }
-  
   return words;
 };
-
 const formatCurrencyWords = (value: number): string => {
   const intPart = Math.floor(value);
   const centPart = Math.round((value - intPart) * 100);
-  
   let result = numberToWords(intPart);
   if (intPart === 1) {
     result += " real";
   } else {
     result += " reais";
   }
-  
   if (centPart > 0) {
     result += " e " + numberToWords(centPart);
     if (centPart === 1) {
@@ -114,18 +90,15 @@ const formatCurrencyWords = (value: number): string => {
       result += " centavos";
     }
   }
-  
   return result;
 };
-
 const serviceLabels: Record<ServiceType, string> = {
   bilheteria: "Bilheteria",
   portaria: "Portaria",
   estacionamento: "Estacionamento",
   suporte: "Suporte Online",
-  bar: "Bar",
+  bar: "Bar"
 };
-
 export function ReceiptPreview({
   open,
   onClose,
@@ -135,7 +108,7 @@ export function ReceiptPreview({
   serviceDescription,
   serviceValues,
   expenses,
-  advanceData,
+  advanceData
 }: ReceiptPreviewProps) {
   const getTotal = () => {
     if (activeTab === "diarias") {
@@ -146,13 +119,10 @@ export function ReceiptPreview({
       return advanceData.value;
     }
   };
-
   const total = getTotal();
-
   const handlePrint = () => {
     window.print();
   };
-
   const getEventDateText = () => {
     if (receiptInfo.tipoData === "periodo" && receiptInfo.dataEvento && receiptInfo.dataEventoFim) {
       return `no período de ${formatDate(receiptInfo.dataEvento)} a ${formatDate(receiptInfo.dataEventoFim)}`;
@@ -161,14 +131,11 @@ export function ReceiptPreview({
     }
     return "";
   };
-
   const getServicesText = () => {
     if (selectedServices.length === 0) return "";
-    return selectedServices.map((s) => serviceLabels[s].toUpperCase()).join(" E ");
+    return selectedServices.map(s => serviceLabels[s].toUpperCase()).join(" E ");
   };
-
-  return (
-    <Dialog open={open} onOpenChange={onClose}>
+  return <Dialog open={open} onOpenChange={onClose}>
       <DialogContent className="max-w-3xl max-h-[90vh] overflow-y-auto print:max-w-none print:max-h-none print:overflow-visible print:shadow-none">
         <DialogHeader className="print:hidden">
           <DialogTitle>Prévia do Recibo</DialogTitle>
@@ -177,11 +144,7 @@ export function ReceiptPreview({
         <div className="bg-white text-black p-8 print:p-0" id="receipt-content">
           {/* Header with Logo */}
           <div className="text-center mb-6">
-            <img
-              src={logoGuicheWeb}
-              alt="Guichê Web"
-              className="h-16 mx-auto mb-4"
-            />
+            <img alt="Guichê Web" className="h-16 mx-auto mb-4" src="/lovable-uploads/198de693-9e55-4044-b508-bbc5bec27671.png" />
             <h1 className="text-xl font-bold text-gray-800 border-b-2 border-gray-300 pb-2">
               RECIBO
             </h1>
@@ -226,8 +189,7 @@ export function ReceiptPreview({
           </div>
 
           {/* Services Table */}
-          {activeTab === "diarias" && (
-            <table className="w-full border-collapse mb-6 text-sm">
+          {activeTab === "diarias" && <table className="w-full border-collapse mb-6 text-sm">
               <thead>
                 <tr className="bg-teal-600 text-white">
                   <th className="border border-gray-400 p-2 text-left">SERVIÇO</th>
@@ -237,10 +199,9 @@ export function ReceiptPreview({
                 </tr>
               </thead>
               <tbody>
-                {serviceValues.map((v) => {
-                  const subtotal = v.quantity * v.value;
-                  return (
-                    <tr key={v.id} className="even:bg-gray-100">
+                {serviceValues.map(v => {
+              const subtotal = v.quantity * v.value;
+              return <tr key={v.id} className="even:bg-gray-100">
                       <td className="border border-gray-400 p-2">{v.label.toUpperCase()}</td>
                       <td className="border border-gray-400 p-2 text-center">
                         {v.quantity > 0 ? v.quantity : ""}
@@ -251,9 +212,8 @@ export function ReceiptPreview({
                       <td className="border border-gray-400 p-2 text-right">
                         R$ {formatCurrency(subtotal)}
                       </td>
-                    </tr>
-                  );
-                })}
+                    </tr>;
+            })}
                 <tr className="font-bold bg-gray-200">
                   <td className="border border-gray-400 p-2" colSpan={3}>
                     TOTAL
@@ -263,11 +223,9 @@ export function ReceiptPreview({
                   </td>
                 </tr>
               </tbody>
-            </table>
-          )}
+            </table>}
 
-          {activeTab === "despesas" && (
-            <table className="w-full border-collapse mb-6 text-sm">
+          {activeTab === "despesas" && <table className="w-full border-collapse mb-6 text-sm">
               <thead>
                 <tr className="bg-teal-600 text-white">
                   <th className="border border-gray-400 p-2 text-left">DESCRIÇÃO</th>
@@ -275,14 +233,12 @@ export function ReceiptPreview({
                 </tr>
               </thead>
               <tbody>
-                {expenses.map((e) => (
-                  <tr key={e.id} className="even:bg-gray-100">
+                {expenses.map(e => <tr key={e.id} className="even:bg-gray-100">
                     <td className="border border-gray-400 p-2">{e.description || "-"}</td>
                     <td className="border border-gray-400 p-2 text-right">
                       R$ {formatCurrency(e.value)}
                     </td>
-                  </tr>
-                ))}
+                  </tr>)}
                 <tr className="font-bold bg-gray-200">
                   <td className="border border-gray-400 p-2">TOTAL</td>
                   <td className="border border-gray-400 p-2 text-right">
@@ -290,11 +246,9 @@ export function ReceiptPreview({
                   </td>
                 </tr>
               </tbody>
-            </table>
-          )}
+            </table>}
 
-          {activeTab === "adiantamento" && (
-            <table className="w-full border-collapse mb-6 text-sm">
+          {activeTab === "adiantamento" && <table className="w-full border-collapse mb-6 text-sm">
               <thead>
                 <tr className="bg-teal-600 text-white">
                   <th className="border border-gray-400 p-2 text-left">DESCRIÇÃO</th>
@@ -305,11 +259,9 @@ export function ReceiptPreview({
                 <tr className="even:bg-gray-100">
                   <td className="border border-gray-400 p-2">
                     Adiantamento - {advanceData.paymentMethod || "N/A"}
-                    {advanceData.description && (
-                      <span className="block text-gray-600 text-xs mt-1">
+                    {advanceData.description && <span className="block text-gray-600 text-xs mt-1">
                         {advanceData.description}
-                      </span>
-                    )}
+                      </span>}
                   </td>
                   <td className="border border-gray-400 p-2 text-right">
                     R$ {formatCurrency(advanceData.value)}
@@ -322,15 +274,12 @@ export function ReceiptPreview({
                   </td>
                 </tr>
               </tbody>
-            </table>
-          )}
+            </table>}
 
           {/* PIX */}
-          {receiptInfo.pix && (
-            <div className="mb-6">
+          {receiptInfo.pix && <div className="mb-6">
               <p className="font-bold">PIX: {receiptInfo.pix}</p>
-            </div>
-          )}
+            </div>}
 
           {/* Footer */}
           <div className="border-t-2 border-gray-300 pt-4 text-center text-xs text-gray-600">
@@ -351,6 +300,5 @@ export function ReceiptPreview({
           </Button>
         </div>
       </DialogContent>
-    </Dialog>
-  );
+    </Dialog>;
 }
