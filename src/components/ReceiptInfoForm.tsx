@@ -6,15 +6,19 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
+import { Label } from "@/components/ui/label";
 import { brazilStates } from "@/data/brazilStates";
-import { User } from "lucide-react";
+import { User, Calendar } from "lucide-react";
 
 export interface ReceiptInfo {
   nomeCompleto: string;
   cpf: string;
   produtor: string;
   nomeEvento: string;
+  tipoData: "unico" | "periodo";
   dataEvento: string;
+  dataEventoFim: string;
   estadoEvento: string;
   cidadeEvento: string;
   pix: string;
@@ -81,14 +85,53 @@ export function ReceiptInfoForm({ data, onChange }: ReceiptInfoFormProps) {
           />
         </div>
 
+        {/* Tipo de Data */}
+        <div className="sm:col-span-2 lg:col-span-4">
+          <label className="form-label flex items-center gap-2">
+            <Calendar className="h-4 w-4" />
+            Tipo de Data do Evento
+          </label>
+          <RadioGroup
+            value={data.tipoData}
+            onValueChange={(value) => updateField("tipoData", value)}
+            className="flex gap-6 mt-2"
+          >
+            <div className="flex items-center space-x-2">
+              <RadioGroupItem value="unico" id="unico" />
+              <Label htmlFor="unico" className="cursor-pointer">
+                Dia Único
+              </Label>
+            </div>
+            <div className="flex items-center space-x-2">
+              <RadioGroupItem value="periodo" id="periodo" />
+              <Label htmlFor="periodo" className="cursor-pointer">
+                Período (de/até)
+              </Label>
+            </div>
+          </RadioGroup>
+        </div>
+
         <div>
-          <label className="form-label">Data do Evento</label>
+          <label className="form-label">
+            {data.tipoData === "periodo" ? "Data Início" : "Data do Evento"}
+          </label>
           <Input
             type="date"
             value={data.dataEvento}
             onChange={(e) => updateField("dataEvento", e.target.value)}
           />
         </div>
+
+        {data.tipoData === "periodo" && (
+          <div>
+            <label className="form-label">Data Fim</label>
+            <Input
+              type="date"
+              value={data.dataEventoFim}
+              onChange={(e) => updateField("dataEventoFim", e.target.value)}
+            />
+          </div>
+        )}
 
         <div>
           <label className="form-label">Estado</label>
