@@ -12,6 +12,7 @@ import { ServiceValue } from "./ValuesSection";
 import { Expense } from "./ExpensesForm";
 import { AdvanceData } from "./AdvanceForm";
 import { TabType } from "./TabNavigation";
+import logoGuicheWeb from "@/assets/logo-guiche-web.jpg";
 
 interface ReceiptPreviewProps {
   open: boolean;
@@ -36,6 +37,85 @@ const formatDate = (dateStr: string): string => {
   if (!dateStr) return "";
   const date = new Date(dateStr + "T00:00:00");
   return date.toLocaleDateString("pt-BR");
+};
+
+const formatDateExtended = (dateStr: string): string => {
+  if (!dateStr) return "";
+  const date = new Date(dateStr + "T00:00:00");
+  const months = [
+    "Janeiro", "Fevereiro", "Março", "Abril", "Maio", "Junho",
+    "Julho", "Agosto", "Setembro", "Outubro", "Novembro", "Dezembro"
+  ];
+  return `${date.getDate()} de ${months[date.getMonth()]} de ${date.getFullYear()}`;
+};
+
+const numberToWords = (num: number): string => {
+  const units = ["", "um", "dois", "três", "quatro", "cinco", "seis", "sete", "oito", "nove"];
+  const teens = ["dez", "onze", "doze", "treze", "quatorze", "quinze", "dezesseis", "dezessete", "dezoito", "dezenove"];
+  const tens = ["", "", "vinte", "trinta", "quarenta", "cinquenta", "sessenta", "setenta", "oitenta", "noventa"];
+  const hundreds = ["", "cento", "duzentos", "trezentos", "quatrocentos", "quinhentos", "seiscentos", "setecentos", "oitocentos", "novecentos"];
+
+  if (num === 0) return "zero";
+  if (num === 100) return "cem";
+
+  let words = "";
+  
+  if (num >= 1000) {
+    const thousands = Math.floor(num / 1000);
+    if (thousands === 1) {
+      words += "mil";
+    } else {
+      words += units[thousands] + " mil";
+    }
+    num %= 1000;
+    if (num > 0) words += " e ";
+  }
+  
+  if (num >= 100) {
+    words += hundreds[Math.floor(num / 100)];
+    num %= 100;
+    if (num > 0) words += " e ";
+  }
+  
+  if (num >= 20) {
+    words += tens[Math.floor(num / 10)];
+    num %= 10;
+    if (num > 0) words += " e ";
+  }
+  
+  if (num >= 10) {
+    words += teens[num - 10];
+    num = 0;
+  }
+  
+  if (num > 0) {
+    words += units[num];
+  }
+  
+  return words;
+};
+
+const formatCurrencyWords = (value: number): string => {
+  const intPart = Math.floor(value);
+  const centPart = Math.round((value - intPart) * 100);
+  
+  let result = numberToWords(intPart);
+  if (intPart === 1) {
+    result += " real";
+  } else {
+    result += " reais";
+  }
+  
+  if (centPart > 0) {
+    result += " e " + numberToWords(centPart);
+    if (centPart === 1) {
+      result += " centavo";
+    } else {
+      result += " centavos";
+    }
+  }
+  
+  return result;
 };
 
 const serviceLabels: Record<ServiceType, string> = {
@@ -67,184 +147,199 @@ export function ReceiptPreview({
     }
   };
 
+  const total = getTotal();
+
   const handlePrint = () => {
     window.print();
   };
 
+  const getEventDateText = () => {
+    if (receiptInfo.tipoData === "periodo" && receiptInfo.dataEvento && receiptInfo.dataEventoFim) {
+      return `no período de ${formatDate(receiptInfo.dataEvento)} a ${formatDate(receiptInfo.dataEventoFim)}`;
+    } else if (receiptInfo.dataEvento) {
+      return `no dia ${formatDate(receiptInfo.dataEvento)}`;
+    }
+    return "";
+  };
+
+  const getServicesText = () => {
+    if (selectedServices.length === 0) return "";
+    return selectedServices.map((s) => serviceLabels[s].toUpperCase()).join(" E ");
+  };
+
   return (
     <Dialog open={open} onOpenChange={onClose}>
-      <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto print:max-w-none print:max-h-none print:overflow-visible">
+      <DialogContent className="max-w-3xl max-h-[90vh] overflow-y-auto print:max-w-none print:max-h-none print:overflow-visible print:shadow-none">
         <DialogHeader className="print:hidden">
           <DialogTitle>Prévia do Recibo</DialogTitle>
         </DialogHeader>
 
-        <div className="bg-card p-8 rounded-lg border border-border print:border-none print:p-0">
-          <div className="text-center mb-8">
-            <h1 className="text-2xl font-bold text-foreground mb-2">RECIBO</h1>
-            <p className="text-muted-foreground">
-              {activeTab === "diarias" && "Diárias"}
-              {activeTab === "despesas" && "Despesas"}
-              {activeTab === "adiantamento" && "Adiantamento"}
+        <div className="bg-white text-black p-8 print:p-0" id="receipt-content">
+          {/* Header with Logo */}
+          <div className="text-center mb-6">
+            <img
+              src={logoGuicheWeb}
+              alt="Guichê Web"
+              className="h-16 mx-auto mb-4"
+            />
+            <h1 className="text-xl font-bold text-gray-800 border-b-2 border-gray-300 pb-2">
+              RECIBO
+            </h1>
+          </div>
+
+          {/* Title */}
+          <div className="bg-teal-600 text-white text-center py-2 font-bold text-lg mb-6">
+            {activeTab === "diarias" && "RECEBIMENTO DE DIÁRIA"}
+            {activeTab === "despesas" && "RECEBIMENTO DE DESPESAS"}
+            {activeTab === "adiantamento" && "RECEBIMENTO DE ADIANTAMENTO"}
+          </div>
+
+          {/* Main Text */}
+          <div className="mb-6 text-justify leading-relaxed">
+            <p>
+              Eu, <strong>{receiptInfo.nomeCompleto || "[Nome Completo]"}</strong>, recebi do
+              produtor{" "}
+              <strong>{receiptInfo.produtor || "[Nome do Produtor]"}</strong>, a quantia de{" "}
+              <strong>R$ {formatCurrency(total)}</strong> ({formatCurrencyWords(total)}) referente à
+              prestação de serviços de{" "}
+              <strong>{getServicesText() || serviceDescription || "[Serviços]"}</strong> do evento{" "}
+              <strong>{receiptInfo.nomeEvento || "[Nome do Evento]"}</strong>{" "}
+              {getEventDateText()}, na cidade de{" "}
+              <strong>
+                {receiptInfo.cidadeEvento}/{receiptInfo.estadoEvento || "[Cidade/UF]"}
+              </strong>
+              .
             </p>
           </div>
 
-          <div className="grid grid-cols-2 gap-4 mb-6 text-sm">
-            <div>
-              <span className="text-muted-foreground">Nome:</span>
-              <p className="font-medium">{receiptInfo.nomeCompleto || "-"}</p>
-            </div>
-            <div>
-              <span className="text-muted-foreground">CPF:</span>
-              <p className="font-medium">{receiptInfo.cpf || "-"}</p>
-            </div>
-            <div>
-              <span className="text-muted-foreground">Evento:</span>
-              <p className="font-medium">{receiptInfo.nomeEvento || "-"}</p>
-            </div>
-            <div>
-              <span className="text-muted-foreground">Data do Evento:</span>
-              <p className="font-medium">
-                {formatDate(receiptInfo.dataEvento) || "-"}
-              </p>
-            </div>
-            <div>
-              <span className="text-muted-foreground">Local:</span>
-              <p className="font-medium">
-                {receiptInfo.cidadeEvento && receiptInfo.estadoEvento
-                  ? `${receiptInfo.cidadeEvento} - ${receiptInfo.estadoEvento}`
-                  : "-"}
-              </p>
-            </div>
-            <div>
-              <span className="text-muted-foreground">Produtor:</span>
-              <p className="font-medium">{receiptInfo.produtor || "-"}</p>
+          {/* Date and Location */}
+          <div className="text-right mb-8">
+            <p>
+              {receiptInfo.cidadeRecibo || "[Cidade]"},{" "}
+              {formatDateExtended(receiptInfo.dataRecibo) || "[Data]"}.
+            </p>
+          </div>
+
+          {/* Signature */}
+          <div className="text-center mb-8">
+            <div className="w-72 mx-auto border-t-2 border-black pt-2 mt-12">
+              <p className="font-bold">{receiptInfo.nomeCompleto || "[Nome Completo]"}</p>
+              {receiptInfo.cpf && <p>CPF: {receiptInfo.cpf}</p>}
             </div>
           </div>
 
+          {/* Services Table */}
           {activeTab === "diarias" && (
-            <>
-              {selectedServices.length > 0 && (
-                <div className="mb-6">
-                  <p className="text-muted-foreground text-sm mb-2">
-                    Serviços:
-                  </p>
-                  <p className="font-medium">
-                    {selectedServices
-                      .map((s) => serviceLabels[s])
-                      .join(", ")}
-                  </p>
-                </div>
-              )}
-
-              {serviceDescription && (
-                <div className="mb-6">
-                  <p className="text-muted-foreground text-sm mb-2">
-                    Descrição:
-                  </p>
-                  <p className="text-foreground">{serviceDescription}</p>
-                </div>
-              )}
-
-              <table className="w-full text-sm mb-6">
-                <thead>
-                  <tr className="border-b border-border">
-                    <th className="text-left py-2">Descrição</th>
-                    <th className="text-center py-2">Qtd</th>
-                    <th className="text-right py-2">Valor</th>
-                    <th className="text-right py-2">Subtotal</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {serviceValues
-                    .filter((v) => v.quantity > 0 && v.value > 0)
-                    .map((v) => (
-                      <tr key={v.id} className="border-b border-border/50">
-                        <td className="py-2">{v.label}</td>
-                        <td className="text-center py-2">{v.quantity}</td>
-                        <td className="text-right py-2">
-                          R$ {formatCurrency(v.value)}
-                        </td>
-                        <td className="text-right py-2">
-                          R$ {formatCurrency(v.quantity * v.value)}
-                        </td>
-                      </tr>
-                    ))}
-                </tbody>
-              </table>
-            </>
-          )}
-
-          {activeTab === "despesas" && (
-            <table className="w-full text-sm mb-6">
+            <table className="w-full border-collapse mb-6 text-sm">
               <thead>
-                <tr className="border-b border-border">
-                  <th className="text-left py-2">Descrição</th>
-                  <th className="text-right py-2">Valor</th>
+                <tr className="bg-teal-600 text-white">
+                  <th className="border border-gray-400 p-2 text-left">SERVIÇO</th>
+                  <th className="border border-gray-400 p-2 text-center w-24">QUANTIDADE</th>
+                  <th className="border border-gray-400 p-2 text-right w-28">VALOR</th>
+                  <th className="border border-gray-400 p-2 text-right w-28">VALOR PAGO</th>
                 </tr>
               </thead>
               <tbody>
-                {expenses
-                  .filter((e) => e.value > 0)
-                  .map((e) => (
-                    <tr key={e.id} className="border-b border-border/50">
-                      <td className="py-2">{e.description || "-"}</td>
-                      <td className="text-right py-2">
-                        R$ {formatCurrency(e.value)}
+                {serviceValues.map((v) => {
+                  const subtotal = v.quantity * v.value;
+                  return (
+                    <tr key={v.id} className="even:bg-gray-100">
+                      <td className="border border-gray-400 p-2">{v.label.toUpperCase()}</td>
+                      <td className="border border-gray-400 p-2 text-center">
+                        {v.quantity > 0 ? v.quantity : ""}
+                      </td>
+                      <td className="border border-gray-400 p-2 text-right">
+                        R$ {formatCurrency(v.value)}
+                      </td>
+                      <td className="border border-gray-400 p-2 text-right">
+                        R$ {formatCurrency(subtotal)}
                       </td>
                     </tr>
-                  ))}
+                  );
+                })}
+                <tr className="font-bold bg-gray-200">
+                  <td className="border border-gray-400 p-2" colSpan={3}>
+                    TOTAL
+                  </td>
+                  <td className="border border-gray-400 p-2 text-right">
+                    R$ {formatCurrency(total)}
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          )}
+
+          {activeTab === "despesas" && (
+            <table className="w-full border-collapse mb-6 text-sm">
+              <thead>
+                <tr className="bg-teal-600 text-white">
+                  <th className="border border-gray-400 p-2 text-left">DESCRIÇÃO</th>
+                  <th className="border border-gray-400 p-2 text-right w-32">VALOR</th>
+                </tr>
+              </thead>
+              <tbody>
+                {expenses.map((e) => (
+                  <tr key={e.id} className="even:bg-gray-100">
+                    <td className="border border-gray-400 p-2">{e.description || "-"}</td>
+                    <td className="border border-gray-400 p-2 text-right">
+                      R$ {formatCurrency(e.value)}
+                    </td>
+                  </tr>
+                ))}
+                <tr className="font-bold bg-gray-200">
+                  <td className="border border-gray-400 p-2">TOTAL</td>
+                  <td className="border border-gray-400 p-2 text-right">
+                    R$ {formatCurrency(total)}
+                  </td>
+                </tr>
               </tbody>
             </table>
           )}
 
           {activeTab === "adiantamento" && (
+            <table className="w-full border-collapse mb-6 text-sm">
+              <thead>
+                <tr className="bg-teal-600 text-white">
+                  <th className="border border-gray-400 p-2 text-left">DESCRIÇÃO</th>
+                  <th className="border border-gray-400 p-2 text-right w-32">VALOR</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr className="even:bg-gray-100">
+                  <td className="border border-gray-400 p-2">
+                    Adiantamento - {advanceData.paymentMethod || "N/A"}
+                    {advanceData.description && (
+                      <span className="block text-gray-600 text-xs mt-1">
+                        {advanceData.description}
+                      </span>
+                    )}
+                  </td>
+                  <td className="border border-gray-400 p-2 text-right">
+                    R$ {formatCurrency(advanceData.value)}
+                  </td>
+                </tr>
+                <tr className="font-bold bg-gray-200">
+                  <td className="border border-gray-400 p-2">TOTAL</td>
+                  <td className="border border-gray-400 p-2 text-right">
+                    R$ {formatCurrency(total)}
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          )}
+
+          {/* PIX */}
+          {receiptInfo.pix && (
             <div className="mb-6">
-              {advanceData.paymentMethod && (
-                <div className="mb-4">
-                  <p className="text-muted-foreground text-sm">
-                    Forma de Pagamento:
-                  </p>
-                  <p className="font-medium">{advanceData.paymentMethod}</p>
-                </div>
-              )}
-              {advanceData.description && (
-                <div>
-                  <p className="text-muted-foreground text-sm">Observações:</p>
-                  <p>{advanceData.description}</p>
-                </div>
-              )}
+              <p className="font-bold">PIX: {receiptInfo.pix}</p>
             </div>
           )}
 
-          <div className="flex justify-end text-xl font-bold border-t border-border pt-4">
-            Total: R$ {formatCurrency(getTotal())}
-          </div>
-
-          <div className="mt-8 pt-6 border-t border-border text-sm text-muted-foreground">
-            <div className="flex justify-between">
-              <span>
-                {receiptInfo.cidadeRecibo && receiptInfo.estadoRecibo
-                  ? `${receiptInfo.cidadeRecibo} - ${receiptInfo.estadoRecibo}`
-                  : ""}
-              </span>
-              <span>{formatDate(receiptInfo.dataRecibo)}</span>
-            </div>
-            {receiptInfo.pix && (
-              <div className="mt-2">
-                <span>PIX: {receiptInfo.pix}</span>
-              </div>
-            )}
-          </div>
-
-          <div className="mt-12 pt-8 border-t border-dashed border-border text-center">
-            <div className="w-64 mx-auto border-t border-foreground pt-2">
-              <p className="font-medium">{receiptInfo.nomeCompleto}</p>
-              {receiptInfo.cpf && (
-                <p className="text-sm text-muted-foreground">
-                  CPF: {receiptInfo.cpf}
-                </p>
-              )}
-            </div>
+          {/* Footer */}
+          <div className="border-t-2 border-gray-300 pt-4 text-center text-xs text-gray-600">
+            <p className="font-bold">Guichê Web Comercialização de Ingressos Ltda.</p>
+            <p>Av. Vale do Sol, 5236 – Salão 3 – Bairro Vale do Sol – Votuporanga/SP</p>
+            <p>CEP: 15.500-269</p>
           </div>
         </div>
 
