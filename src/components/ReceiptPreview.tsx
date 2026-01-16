@@ -12,7 +12,7 @@ import { ServiceValue } from "./ValuesSection";
 import { Expense } from "./ExpensesForm";
 import { AdvanceData } from "./AdvanceForm";
 import { TabType } from "./TabNavigation";
-import logoGuicheWeb from "@/assets/logo-guiche-web.jpg";
+import logoGuicheWeb from "@/assets/logo-guiche-web.png";
 
 interface ReceiptPreviewProps {
   open: boolean;
@@ -212,17 +212,14 @@ export function ReceiptPreview({
             </p>
           </div>
 
-          {/* Date and Location */}
-          <div className="text-right mb-8">
-            <p>
+          {/* Signature */}
+          <div className="text-center mb-8">
+            {/* Date and Location centered above signature */}
+            <p className="mb-12">
               {receiptInfo.cidadeRecibo || "[Cidade]"},{" "}
               {formatDateExtended(receiptInfo.dataRecibo) || "[Data]"}.
             </p>
-          </div>
-
-          {/* Signature */}
-          <div className="text-center mb-8">
-            <div className="w-72 mx-auto border-t-2 border-black pt-2 mt-12">
+            <div className="w-72 mx-auto border-t-2 border-black pt-2">
               <p className="font-bold">{receiptInfo.nomeCompleto || "[Nome Completo]"}</p>
               {receiptInfo.cpf && <p>CPF: {receiptInfo.cpf}</p>}
             </div>
