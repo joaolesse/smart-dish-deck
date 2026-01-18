@@ -149,19 +149,23 @@ export function ReceiptPreview({
         </DialogHeader>
 
         <div className="bg-white text-black p-8 print:p-0" id="receipt-content">
-          {/* Header with Logo */}
-          <div className="text-center mb-6">
-            <img alt="Guichê Web" className="h-16 mx-auto mb-4" src="/lovable-uploads/198de693-9e55-4044-b508-bbc5bec27671.png" />
-            <h1 className="text-xl font-bold text-gray-800 border-b-2 border-gray-300 pb-2">
-              RECIBO
-            </h1>
-          </div>
-
-          {/* Title */}
-          <div className="bg-teal-600 text-white text-center py-2 font-bold text-lg mb-6">
-            {activeTab === "diarias" && "RECEBIMENTO DE DIÁRIA"}
-            {activeTab === "despesas" && "RECEBIMENTO DE DESPESAS"}
-            {activeTab === "adiantamento" && "RECEBIMENTO DE ADIANTAMENTO"}
+          {/* Header with Logo on left */}
+          <div className="flex items-start mb-6">
+            <img 
+              alt="Guichê Web" 
+              className="h-14 object-contain" 
+              src={logoGuicheWeb} 
+            />
+            <div className="flex-1 text-center">
+              <h1 className="text-xl font-bold text-gray-800 mb-2">
+                RECIBO
+              </h1>
+              <div className="bg-gray-800 text-white text-center py-2 font-bold text-base">
+                {activeTab === "diarias" && "RECEBIMENTO DE DIÁRIA"}
+                {activeTab === "despesas" && "RECEBIMENTO DE DESPESAS"}
+                {activeTab === "adiantamento" && "RECEBIMENTO DE ADIANTAMENTO"}
+              </div>
+            </div>
           </div>
 
           {/* Main Text */}

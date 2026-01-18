@@ -9,6 +9,7 @@ import {
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Label } from "@/components/ui/label";
 import { brazilStates } from "@/data/brazilStates";
+import { useBrazilCities } from "@/hooks/useBrazilCities";
 import { User, Calendar } from "lucide-react";
 
 export interface ReceiptInfo {
@@ -33,8 +34,19 @@ interface ReceiptInfoFormProps {
 }
 
 export function ReceiptInfoForm({ data, onChange }: ReceiptInfoFormProps) {
+  const { cities: citiesEvento, loading: loadingEvento } = useBrazilCities(data.estadoEvento);
+  const { cities: citiesRecibo, loading: loadingRecibo } = useBrazilCities(data.estadoRecibo);
+
   const updateField = (field: keyof ReceiptInfo, value: string) => {
     onChange({ ...data, [field]: value });
+  };
+
+  const handleStateEventoChange = (value: string) => {
+    onChange({ ...data, estadoEvento: value, cidadeEvento: "" });
+  };
+
+  const handleStateReciboChange = (value: string) => {
+    onChange({ ...data, estadoRecibo: value, cidadeRecibo: "" });
   };
 
   return (
@@ -134,15 +146,15 @@ export function ReceiptInfoForm({ data, onChange }: ReceiptInfoFormProps) {
         )}
 
         <div>
-          <label className="form-label">Estado</label>
+          <label className="form-label">Estado do Evento</label>
           <Select
             value={data.estadoEvento}
-            onValueChange={(value) => updateField("estadoEvento", value)}
+            onValueChange={handleStateEventoChange}
           >
             <SelectTrigger>
               <SelectValue placeholder="Selecione o estado" />
             </SelectTrigger>
-            <SelectContent>
+            <SelectContent className="bg-background border z-50">
               {brazilStates.map((state) => (
                 <SelectItem key={state.code} value={state.code}>
                   {state.code} - {state.name}
@@ -153,12 +165,23 @@ export function ReceiptInfoForm({ data, onChange }: ReceiptInfoFormProps) {
         </div>
 
         <div>
-          <label className="form-label">Cidade</label>
-          <Input
-            placeholder="Cidade do evento"
+          <label className="form-label">Cidade do Evento</label>
+          <Select
             value={data.cidadeEvento}
-            onChange={(e) => updateField("cidadeEvento", e.target.value)}
-          />
+            onValueChange={(value) => updateField("cidadeEvento", value)}
+            disabled={!data.estadoEvento || loadingEvento}
+          >
+            <SelectTrigger>
+              <SelectValue placeholder={loadingEvento ? "Carregando..." : "Selecione a cidade"} />
+            </SelectTrigger>
+            <SelectContent className="bg-background border z-50 max-h-60">
+              {citiesEvento.map((city) => (
+                <SelectItem key={city} value={city}>
+                  {city}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
         </div>
 
         <div>
@@ -183,12 +206,12 @@ export function ReceiptInfoForm({ data, onChange }: ReceiptInfoFormProps) {
           <label className="form-label">Estado do Recibo</label>
           <Select
             value={data.estadoRecibo}
-            onValueChange={(value) => updateField("estadoRecibo", value)}
+            onValueChange={handleStateReciboChange}
           >
             <SelectTrigger>
               <SelectValue placeholder="Selecione o estado" />
             </SelectTrigger>
-            <SelectContent>
+            <SelectContent className="bg-background border z-50">
               {brazilStates.map((state) => (
                 <SelectItem key={state.code} value={state.code}>
                   {state.code} - {state.name}
@@ -200,11 +223,22 @@ export function ReceiptInfoForm({ data, onChange }: ReceiptInfoFormProps) {
 
         <div>
           <label className="form-label">Cidade do Recibo</label>
-          <Input
-            placeholder="Cidade do recibo"
+          <Select
             value={data.cidadeRecibo}
-            onChange={(e) => updateField("cidadeRecibo", e.target.value)}
-          />
+            onValueChange={(value) => updateField("cidadeRecibo", value)}
+            disabled={!data.estadoRecibo || loadingRecibo}
+          >
+            <SelectTrigger>
+              <SelectValue placeholder={loadingRecibo ? "Carregando..." : "Selecione a cidade"} />
+            </SelectTrigger>
+            <SelectContent className="bg-background border z-50 max-h-60">
+              {citiesRecibo.map((city) => (
+                <SelectItem key={city} value={city}>
+                  {city}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
         </div>
       </div>
     </div>
