@@ -4,7 +4,7 @@ import { TabNavigation, TabType } from "@/components/TabNavigation";
 import { ReceiptInfoForm, ReceiptInfo } from "@/components/ReceiptInfoForm";
 import { ServicesSection, ServiceType } from "@/components/ServicesSection";
 import { ValuesSection, ServiceValue } from "@/components/ValuesSection";
-import { ExpensesForm, Expense } from "@/components/ExpensesForm";
+import { ExpensesForm, ExpenseItem } from "@/components/ExpensesForm";
 import { AdvanceForm, AdvanceData } from "@/components/AdvanceForm";
 import { GenerateReceiptButton } from "@/components/GenerateReceiptButton";
 import { ReceiptPreview } from "@/components/ReceiptPreview";
@@ -34,6 +34,17 @@ const initialServiceValues: ServiceValue[] = [
   { id: "horaExtraDeslocamento", label: "Hora Extra Deslocamento", quantity: 0, value: 0 },
 ];
 
+const initialExpenses: ExpenseItem[] = [
+  { id: "hospedagem", label: "Hospedagem (R$)", type: "single", quantity: 0, value: 0 },
+  { id: "transporte", label: "Transporte (R$)", type: "single", quantity: 0, value: 0 },
+  { id: "combustivel", label: "Combustível (R$)", type: "single", quantity: 0, value: 0 },
+  { id: "alimentacao", label: "Alimentação", type: "quantity", quantity: 0, value: 0 },
+  { id: "cafeManha", label: "Café da Manhã", type: "quantity", quantity: 0, value: 0 },
+  { id: "alimentacaoAeroporto", label: "Alimentação Aeroporto", type: "quantity", quantity: 0, value: 0 },
+  { id: "pedagio", label: "Pedágio (R$)", type: "single", quantity: 0, value: 0 },
+  { id: "outros", label: "Outros (R$)", type: "single", quantity: 0, value: 0 },
+];
+
 const initialAdvanceData: AdvanceData = {
   value: 0,
   description: "",
@@ -47,7 +58,7 @@ export default function Index() {
   const [selectedServices, setSelectedServices] = useState<ServiceType[]>([]);
   const [serviceDescription, setServiceDescription] = useState("");
   const [serviceValues, setServiceValues] = useState<ServiceValue[]>(initialServiceValues);
-  const [expenses, setExpenses] = useState<Expense[]>([]);
+  const [expenses, setExpenses] = useState<ExpenseItem[]>(initialExpenses);
   const [advanceData, setAdvanceData] = useState<AdvanceData>(initialAdvanceData);
   const [showPreview, setShowPreview] = useState(false);
 

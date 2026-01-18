@@ -4,7 +4,7 @@ import { Download, X } from "lucide-react";
 import { ReceiptInfo } from "./ReceiptInfoForm";
 import { ServiceType } from "./ServicesSection";
 import { ServiceValue } from "./ValuesSection";
-import { Expense } from "./ExpensesForm";
+import { ExpenseItem } from "./ExpensesForm";
 import { AdvanceData } from "./AdvanceForm";
 import { TabType } from "./TabNavigation";
 import logoGuicheWeb from "@/assets/logo-guiche-web.png";
@@ -16,7 +16,7 @@ interface ReceiptPreviewProps {
   selectedServices: ServiceType[];
   serviceDescription: string;
   serviceValues: ServiceValue[];
-  expenses: Expense[];
+  expenses: ExpenseItem[];
   advanceData: AdvanceData;
 }
 const formatCurrency = (value: number): string => {
@@ -110,11 +110,18 @@ export function ReceiptPreview({
   expenses,
   advanceData
 }: ReceiptPreviewProps) {
+  const getSubtotal = (expense: ExpenseItem): number => {
+    if (expense.type === "quantity") {
+      return expense.quantity * expense.value;
+    }
+    return expense.value;
+  };
+
   const getTotal = () => {
     if (activeTab === "diarias") {
       return serviceValues.reduce((sum, v) => sum + v.quantity * v.value, 0);
     } else if (activeTab === "despesas") {
-      return expenses.reduce((sum, e) => sum + e.value, 0);
+      return expenses.reduce((sum, e) => sum + getSubtotal(e), 0);
     } else {
       return advanceData.value;
     }
@@ -229,18 +236,31 @@ export function ReceiptPreview({
               <thead>
                 <tr className="bg-teal-600 text-white">
                   <th className="border border-gray-400 p-2 text-left">DESCRIÇÃO</th>
-                  <th className="border border-gray-400 p-2 text-right w-32">VALOR</th>
+                  <th className="border border-gray-400 p-2 text-center w-24">QUANTIDADE</th>
+                  <th className="border border-gray-400 p-2 text-right w-28">VALOR UNIT.</th>
+                  <th className="border border-gray-400 p-2 text-right w-28">TOTAL</th>
                 </tr>
               </thead>
               <tbody>
-                {expenses.map(e => <tr key={e.id} className="even:bg-gray-100">
-                    <td className="border border-gray-400 p-2">{e.description || "-"}</td>
-                    <td className="border border-gray-400 p-2 text-right">
-                      R$ {formatCurrency(e.value)}
-                    </td>
-                  </tr>)}
+                {expenses.filter(e => getSubtotal(e) > 0).map(e => {
+                  const subtotal = getSubtotal(e);
+                  return (
+                    <tr key={e.id} className="even:bg-gray-100">
+                      <td className="border border-gray-400 p-2">{e.label.replace(" (R$)", "").toUpperCase()}</td>
+                      <td className="border border-gray-400 p-2 text-center">
+                        {e.type === "quantity" && e.quantity > 0 ? e.quantity : "-"}
+                      </td>
+                      <td className="border border-gray-400 p-2 text-right">
+                        R$ {formatCurrency(e.value)}
+                      </td>
+                      <td className="border border-gray-400 p-2 text-right">
+                        R$ {formatCurrency(subtotal)}
+                      </td>
+                    </tr>
+                  );
+                })}
                 <tr className="font-bold bg-gray-200">
-                  <td className="border border-gray-400 p-2">TOTAL</td>
+                  <td className="border border-gray-400 p-2" colSpan={3}>TOTAL</td>
                   <td className="border border-gray-400 p-2 text-right">
                     R$ {formatCurrency(total)}
                   </td>
