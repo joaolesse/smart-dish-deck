@@ -8,8 +8,7 @@ import {
 } from "@/components/ui/select";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Label } from "@/components/ui/label";
-import { brazilStates } from "@/data/brazilStates";
-import { useBrazilCities } from "@/hooks/useBrazilCities";
+import { getStates, getCities } from "@/data/brazilLocations";
 import { User, Calendar } from "lucide-react";
 
 export interface ReceiptInfo {
@@ -34,8 +33,9 @@ interface ReceiptInfoFormProps {
 }
 
 export function ReceiptInfoForm({ data, onChange }: ReceiptInfoFormProps) {
-  const { cities: citiesEvento, loading: loadingEvento } = useBrazilCities(data.estadoEvento);
-  const { cities: citiesRecibo, loading: loadingRecibo } = useBrazilCities(data.estadoRecibo);
+  const states = getStates();
+  const citiesEvento = getCities(data.estadoEvento);
+  const citiesRecibo = getCities(data.estadoRecibo);
 
   const updateField = (field: keyof ReceiptInfo, value: string) => {
     onChange({ ...data, [field]: value });
@@ -155,7 +155,7 @@ export function ReceiptInfoForm({ data, onChange }: ReceiptInfoFormProps) {
               <SelectValue placeholder="Selecione o estado" />
             </SelectTrigger>
             <SelectContent className="bg-background border z-50">
-              {brazilStates.map((state) => (
+              {states.map((state) => (
                 <SelectItem key={state.code} value={state.code}>
                   {state.code} - {state.name}
                 </SelectItem>
@@ -169,10 +169,10 @@ export function ReceiptInfoForm({ data, onChange }: ReceiptInfoFormProps) {
           <Select
             value={data.cidadeEvento}
             onValueChange={(value) => updateField("cidadeEvento", value)}
-            disabled={!data.estadoEvento || loadingEvento}
+            disabled={!data.estadoEvento}
           >
             <SelectTrigger>
-              <SelectValue placeholder={loadingEvento ? "Carregando..." : "Selecione a cidade"} />
+              <SelectValue placeholder="Selecione a cidade" />
             </SelectTrigger>
             <SelectContent className="bg-background border z-50 max-h-60">
               {citiesEvento.map((city) => (
@@ -212,7 +212,7 @@ export function ReceiptInfoForm({ data, onChange }: ReceiptInfoFormProps) {
               <SelectValue placeholder="Selecione o estado" />
             </SelectTrigger>
             <SelectContent className="bg-background border z-50">
-              {brazilStates.map((state) => (
+              {states.map((state) => (
                 <SelectItem key={state.code} value={state.code}>
                   {state.code} - {state.name}
                 </SelectItem>
@@ -226,10 +226,10 @@ export function ReceiptInfoForm({ data, onChange }: ReceiptInfoFormProps) {
           <Select
             value={data.cidadeRecibo}
             onValueChange={(value) => updateField("cidadeRecibo", value)}
-            disabled={!data.estadoRecibo || loadingRecibo}
+            disabled={!data.estadoRecibo}
           >
             <SelectTrigger>
-              <SelectValue placeholder={loadingRecibo ? "Carregando..." : "Selecione a cidade"} />
+              <SelectValue placeholder="Selecione a cidade" />
             </SelectTrigger>
             <SelectContent className="bg-background border z-50 max-h-60">
               {citiesRecibo.map((city) => (
