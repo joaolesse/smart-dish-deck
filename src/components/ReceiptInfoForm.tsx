@@ -1,3 +1,4 @@
+import { useMemo } from "react";
 import { Input } from "@/components/ui/input";
 import {
   Select,
@@ -8,8 +9,7 @@ import {
 } from "@/components/ui/select";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Label } from "@/components/ui/label";
-import { getStates } from "@brazilian-utils/brazilian-utils";
-import { getCities } from "@brazilian-utils/brazilian-utils";
+import { getStates, getCities } from "@brazilian-utils/brazilian-utils";
 import { User, Calendar } from "lucide-react";
 import { formatCPF } from "@/utils/cpfMask";
 
@@ -35,9 +35,15 @@ interface ReceiptInfoFormProps {
 }
 
 export function ReceiptInfoForm({ data, onChange }: ReceiptInfoFormProps) {
-  const states = getStates();
-  const citiesEvento = data.estadoEvento ? getCities(data.estadoEvento as any) : [];
-  const citiesRecibo = data.estadoRecibo ? getCities(data.estadoRecibo as any) : [];
+  const states = useMemo(() => getStates(), []);
+  const citiesEvento = useMemo(
+    () => (data.estadoEvento ? getCities(data.estadoEvento as any) : []),
+    [data.estadoEvento]
+  );
+  const citiesRecibo = useMemo(
+    () => (data.estadoRecibo ? getCities(data.estadoRecibo as any) : []),
+    [data.estadoRecibo]
+  );
 
   const updateField = (field: keyof ReceiptInfo, value: string) => {
     onChange({ ...data, [field]: value });
