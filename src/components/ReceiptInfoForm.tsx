@@ -8,8 +8,10 @@ import {
 } from "@/components/ui/select";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Label } from "@/components/ui/label";
-import { getStates, getCities } from "@/data/brazilLocations";
+import { getStates } from "@brazilian-utils/brazilian-utils";
+import { getCities } from "@brazilian-utils/brazilian-utils";
 import { User, Calendar } from "lucide-react";
+import { formatCPF } from "@/utils/cpfMask";
 
 export interface ReceiptInfo {
   nomeCompleto: string;
@@ -34,8 +36,8 @@ interface ReceiptInfoFormProps {
 
 export function ReceiptInfoForm({ data, onChange }: ReceiptInfoFormProps) {
   const states = getStates();
-  const citiesEvento = getCities(data.estadoEvento);
-  const citiesRecibo = getCities(data.estadoRecibo);
+  const citiesEvento = data.estadoEvento ? getCities(data.estadoEvento as any) : [];
+  const citiesRecibo = data.estadoRecibo ? getCities(data.estadoRecibo as any) : [];
 
   const updateField = (field: keyof ReceiptInfo, value: string) => {
     onChange({ ...data, [field]: value });
@@ -73,9 +75,10 @@ export function ReceiptInfoForm({ data, onChange }: ReceiptInfoFormProps) {
         <div>
           <label className="form-label">CPF</label>
           <Input
-            placeholder="123.456.789-00"
+            placeholder="000.000.000-00"
             value={data.cpf}
-            onChange={(e) => updateField("cpf", e.target.value)}
+            onChange={(e) => updateField("cpf", formatCPF(e.target.value))}
+            maxLength={14}
           />
         </div>
 
@@ -154,7 +157,7 @@ export function ReceiptInfoForm({ data, onChange }: ReceiptInfoFormProps) {
             <SelectTrigger>
               <SelectValue placeholder="Selecione o estado" />
             </SelectTrigger>
-            <SelectContent className="bg-background border z-50">
+            <SelectContent className="bg-background border z-50 max-h-60">
               {states.map((state) => (
                 <SelectItem key={state.code} value={state.code}>
                   {state.code} - {state.name}
@@ -211,7 +214,7 @@ export function ReceiptInfoForm({ data, onChange }: ReceiptInfoFormProps) {
             <SelectTrigger>
               <SelectValue placeholder="Selecione o estado" />
             </SelectTrigger>
-            <SelectContent className="bg-background border z-50">
+            <SelectContent className="bg-background border z-50 max-h-60">
               {states.map((state) => (
                 <SelectItem key={state.code} value={state.code}>
                   {state.code} - {state.name}
