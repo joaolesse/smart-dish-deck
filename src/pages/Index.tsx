@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useCallback } from "react";
 import { Header } from "@/components/Header";
 import { TabNavigation, TabType } from "@/components/TabNavigation";
 import { ReceiptInfoForm, ReceiptInfo } from "@/components/ReceiptInfoForm";
@@ -62,6 +62,10 @@ export default function Index() {
   const [advanceData, setAdvanceData] = useState<AdvanceData>(initialAdvanceData);
   const [showPreview, setShowPreview] = useState(false);
 
+  const handleReceiptInfoChange = useCallback((info: ReceiptInfo) => {
+    setReceiptInfo(info);
+  }, []);
+
   const handleGenerateReceipt = () => {
     if (!receiptInfo.nomeCompleto.trim()) {
       toast({
@@ -83,7 +87,7 @@ export default function Index() {
           <TabNavigation activeTab={activeTab} onTabChange={setActiveTab} />
 
           <div className="space-y-6 mt-6">
-            <ReceiptInfoForm data={receiptInfo} onChange={setReceiptInfo} />
+            <ReceiptInfoForm data={receiptInfo} onChange={handleReceiptInfoChange} />
 
             {activeTab === "diarias" && (
               <>
