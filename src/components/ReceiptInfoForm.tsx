@@ -1,4 +1,4 @@
-import { useMemo } from "react";
+import { useMemo, memo } from "react";
 import { Input } from "@/components/ui/input";
 import {
   Select,
@@ -34,7 +34,7 @@ interface ReceiptInfoFormProps {
   onChange: (data: ReceiptInfo) => void;
 }
 
-export function ReceiptInfoForm({ data, onChange }: ReceiptInfoFormProps) {
+export const ReceiptInfoForm = memo(function ReceiptInfoForm({ data, onChange }: ReceiptInfoFormProps) {
   const states = useMemo(() => getStates(), []);
   const citiesEvento = useMemo(
     () => (data.estadoEvento ? getCities(data.estadoEvento as any) : []),
@@ -252,4 +252,4 @@ export function ReceiptInfoForm({ data, onChange }: ReceiptInfoFormProps) {
       </div>
     </div>
   );
-}
+});
