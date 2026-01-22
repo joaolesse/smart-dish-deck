@@ -169,24 +169,27 @@ export const ReceiptPreview = memo(function ReceiptPreview({
         </DialogHeader>
 
         <div className="bg-white text-black p-8 print:p-0" id="receipt-content">
-          {/* Header with Logo on left */}
-          <div className="flex items-start gap-4 mb-6">
-            <div className="flex-shrink-0">
+          {/* Header - Layout Vertical */}
+          <div className="mb-6">
+            {/* Logo no topo esquerdo */}
+            <div className="mb-4">
               <img 
                 alt="Guichê Web" 
-                className="h-24 w-auto object-contain" 
+                className="h-28 w-auto object-contain" 
                 src={logoGuicheWeb} 
               />
             </div>
-            <div className="flex-1">
-              <h1 className="text-2xl font-bold text-gray-800 mb-3 text-center">
-                RECIBO
-              </h1>
-              <div className="bg-gray-800 text-white text-center py-2 font-bold text-base">
-                {activeTab === "diarias" && "RECEBIMENTO DE DIÁRIA"}
-                {activeTab === "despesas" && "RECEBIMENTO DE DESPESAS"}
-                {activeTab === "adiantamento" && "RECEBIMENTO DE ADIANTAMENTO"}
-              </div>
+            
+            {/* Título centralizado */}
+            <h1 className="text-2xl font-bold text-gray-800 mb-3 text-center">
+              RECIBO
+            </h1>
+            
+            {/* Barra de tipo */}
+            <div className="bg-gray-800 text-white text-center py-2 font-bold text-base">
+              {activeTab === "diarias" && "RECEBIMENTO DE DIÁRIA"}
+              {activeTab === "despesas" && "RECEBIMENTO DE DESPESAS"}
+              {activeTab === "adiantamento" && "RECEBIMENTO DE ADIANTAMENTO"}
             </div>
           </div>
 
