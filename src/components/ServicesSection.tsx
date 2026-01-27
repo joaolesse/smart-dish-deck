@@ -41,7 +41,9 @@ export function ServicesSection({
   return (
     <div className="section-card animate-fade-in">
       <div className="flex items-center gap-2 mb-6">
-        <Ticket className="h-5 w-5 text-primary" />
+        <div className="p-2 rounded-lg bg-primary/10">
+          <Ticket className="h-5 w-5 text-primary" />
+        </div>
         <h2 className="text-lg font-semibold text-foreground">
           Serviços Prestados
         </h2>
@@ -67,7 +69,7 @@ export function ServicesSection({
         <label className="form-label">Descrição Adicional dos Serviços</label>
         <Textarea
           placeholder="Descreva os serviços prestados..."
-          className="min-h-[100px] resize-none"
+          className="min-h-[100px] resize-none bg-background/80 backdrop-blur-sm"
           value={description}
           onChange={(e) => onDescriptionChange(e.target.value)}
         />

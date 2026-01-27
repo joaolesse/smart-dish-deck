@@ -4,7 +4,7 @@ import { Wallet } from "lucide-react";
 export interface ExpenseItem {
   id: string;
   label: string;
-  type: "single" | "quantity"; // single = apenas valor, quantity = quantidade + valor
+  type: "single" | "quantity";
   quantity: number;
   value: number;
 }
@@ -35,16 +35,15 @@ export function ExpensesForm({ expenses, onChange }: ExpensesFormProps) {
     return expense.value;
   };
 
-  const total = expenses.reduce((sum, e) => sum + getSubtotal(e), 0);
-
-  // Separate by type for layout
   const singleExpenses = expenses.filter((e) => e.type === "single");
   const quantityExpenses = expenses.filter((e) => e.type === "quantity");
 
   return (
     <div className="section-card animate-fade-in">
       <div className="flex items-center gap-2 mb-6">
-        <Wallet className="h-5 w-5 text-primary" />
+        <div className="p-2 rounded-lg bg-primary/10">
+          <Wallet className="h-5 w-5 text-primary" />
+        </div>
         <h2 className="text-lg font-semibold text-foreground">Valores das Despesas</h2>
       </div>
 
@@ -53,7 +52,7 @@ export function ExpensesForm({ expenses, onChange }: ExpensesFormProps) {
         {singleExpenses.slice(0, 3).map((expense) => (
           <div
             key={expense.id}
-            className="p-4 rounded-lg bg-muted/50 border border-border"
+            className="p-4 rounded-lg bg-background/50 border border-border backdrop-blur-sm transition-all duration-200 hover:shadow-md"
           >
             <label className="form-label text-primary font-medium">{expense.label}</label>
             <Input
@@ -65,7 +64,7 @@ export function ExpensesForm({ expenses, onChange }: ExpensesFormProps) {
               onChange={(e) =>
                 updateExpense(expense.id, "value", parseFloat(e.target.value) || 0)
               }
-              className="mt-2"
+              className="mt-2 bg-background/80"
             />
           </div>
         ))}
@@ -76,7 +75,7 @@ export function ExpensesForm({ expenses, onChange }: ExpensesFormProps) {
         {quantityExpenses.map((expense) => (
           <div
             key={expense.id}
-            className="p-4 rounded-lg bg-muted/50 border border-border"
+            className="p-4 rounded-lg bg-background/50 border border-border backdrop-blur-sm transition-all duration-200 hover:shadow-md"
           >
             <label className="form-label text-primary font-medium">{expense.label}</label>
             <div className="grid grid-cols-2 gap-3 mt-2">
@@ -91,6 +90,7 @@ export function ExpensesForm({ expenses, onChange }: ExpensesFormProps) {
                   onChange={(e) =>
                     updateExpense(expense.id, "quantity", parseInt(e.target.value) || 0)
                   }
+                  className="bg-background/80"
                 />
               </div>
               <div>
@@ -104,22 +104,23 @@ export function ExpensesForm({ expenses, onChange }: ExpensesFormProps) {
                   onChange={(e) =>
                     updateExpense(expense.id, "value", parseFloat(e.target.value) || 0)
                   }
+                  className="bg-background/80"
                 />
               </div>
             </div>
             <p className="text-right text-sm text-primary mt-2">
-              Subtotal: {formatCurrency(getSubtotal(expense))}
+              Subtotal: R$ {formatCurrency(getSubtotal(expense))}
             </p>
           </div>
         ))}
       </div>
 
       {/* Grid for remaining single value expenses */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
         {singleExpenses.slice(3).map((expense) => (
           <div
             key={expense.id}
-            className="p-4 rounded-lg bg-muted/50 border border-border"
+            className="p-4 rounded-lg bg-background/50 border border-border backdrop-blur-sm transition-all duration-200 hover:shadow-md"
           >
             <label className="form-label text-primary font-medium">{expense.label}</label>
             <Input
@@ -131,17 +132,10 @@ export function ExpensesForm({ expenses, onChange }: ExpensesFormProps) {
               onChange={(e) =>
                 updateExpense(expense.id, "value", parseFloat(e.target.value) || 0)
               }
-              className="mt-2"
+              className="mt-2 bg-background/80"
             />
           </div>
         ))}
-      </div>
-
-      <div className="flex items-center justify-end pt-4 border-t border-border">
-        <div className="text-lg font-semibold">
-          Total:{" "}
-          <span className="total-display">R$ {formatCurrency(total)}</span>
-        </div>
       </div>
     </div>
   );

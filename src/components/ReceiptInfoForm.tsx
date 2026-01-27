@@ -1,4 +1,5 @@
 import { useMemo, memo } from "react";
+import { FloatingInput } from "@/components/ui/floating-input";
 import { Input } from "@/components/ui/input";
 import {
   Select,
@@ -60,51 +61,40 @@ export const ReceiptInfoForm = memo(function ReceiptInfoForm({ data, onChange }:
   return (
     <div className="section-card animate-fade-in">
       <div className="flex items-center gap-2 mb-6">
-        <User className="h-5 w-5 text-primary" />
+        <div className="p-2 rounded-lg bg-primary/10">
+          <User className="h-5 w-5 text-primary" />
+        </div>
         <h2 className="text-lg font-semibold text-foreground">
           Informações do Recibo
         </h2>
       </div>
 
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-        <div>
-          <label className="form-label">
-            Nome Completo <span className="text-destructive">*</span>
-          </label>
-          <Input
-            placeholder="João da Silva"
-            value={data.nomeCompleto}
-            onChange={(e) => updateField("nomeCompleto", e.target.value)}
-          />
-        </div>
+        <FloatingInput
+          label="Nome Completo"
+          required
+          value={data.nomeCompleto}
+          onChange={(e) => updateField("nomeCompleto", e.target.value)}
+        />
 
-        <div>
-          <label className="form-label">CPF</label>
-          <Input
-            placeholder="000.000.000-00"
-            value={data.cpf}
-            onChange={(e) => updateField("cpf", formatCPF(e.target.value))}
-            maxLength={14}
-          />
-        </div>
+        <FloatingInput
+          label="CPF"
+          value={data.cpf}
+          onChange={(e) => updateField("cpf", formatCPF(e.target.value))}
+          maxLength={14}
+        />
 
-        <div>
-          <label className="form-label">Produtor</label>
-          <Input
-            placeholder="Nome do Produtor"
-            value={data.produtor}
-            onChange={(e) => updateField("produtor", e.target.value)}
-          />
-        </div>
+        <FloatingInput
+          label="Produtor"
+          value={data.produtor}
+          onChange={(e) => updateField("produtor", e.target.value)}
+        />
 
-        <div>
-          <label className="form-label">Nome do Evento</label>
-          <Input
-            placeholder="Nome do Evento"
-            value={data.nomeEvento}
-            onChange={(e) => updateField("nomeEvento", e.target.value)}
-          />
-        </div>
+        <FloatingInput
+          label="Nome do Evento"
+          value={data.nomeEvento}
+          onChange={(e) => updateField("nomeEvento", e.target.value)}
+        />
 
         {/* Tipo de Data */}
         <div className="sm:col-span-2 lg:col-span-4">
@@ -140,6 +130,7 @@ export const ReceiptInfoForm = memo(function ReceiptInfoForm({ data, onChange }:
             type="date"
             value={data.dataEvento}
             onChange={(e) => updateField("dataEvento", e.target.value)}
+            className="bg-background/80 backdrop-blur-sm"
           />
         </div>
 
@@ -150,6 +141,7 @@ export const ReceiptInfoForm = memo(function ReceiptInfoForm({ data, onChange }:
               type="date"
               value={data.dataEventoFim}
               onChange={(e) => updateField("dataEventoFim", e.target.value)}
+              className="bg-background/80 backdrop-blur-sm"
             />
           </div>
         )}
@@ -160,7 +152,7 @@ export const ReceiptInfoForm = memo(function ReceiptInfoForm({ data, onChange }:
             value={data.estadoEvento}
             onValueChange={handleStateEventoChange}
           >
-            <SelectTrigger>
+            <SelectTrigger className="bg-background/80 backdrop-blur-sm">
               <SelectValue placeholder="Selecione o estado" />
             </SelectTrigger>
             <SelectContent className="bg-background border z-50 max-h-60">
@@ -180,7 +172,7 @@ export const ReceiptInfoForm = memo(function ReceiptInfoForm({ data, onChange }:
             onValueChange={(value) => updateField("cidadeEvento", value)}
             disabled={!data.estadoEvento}
           >
-            <SelectTrigger>
+            <SelectTrigger className="bg-background/80 backdrop-blur-sm">
               <SelectValue placeholder="Selecione a cidade" />
             </SelectTrigger>
             <SelectContent className="bg-background border z-50 max-h-60">
@@ -193,14 +185,11 @@ export const ReceiptInfoForm = memo(function ReceiptInfoForm({ data, onChange }:
           </Select>
         </div>
 
-        <div>
-          <label className="form-label">PIX (Opcional)</label>
-          <Input
-            placeholder="Chave PIX ou CPF"
-            value={data.pix}
-            onChange={(e) => updateField("pix", e.target.value)}
-          />
-        </div>
+        <FloatingInput
+          label="PIX (Opcional)"
+          value={data.pix}
+          onChange={(e) => updateField("pix", e.target.value)}
+        />
 
         <div>
           <label className="form-label">Data do Recibo</label>
@@ -208,6 +197,7 @@ export const ReceiptInfoForm = memo(function ReceiptInfoForm({ data, onChange }:
             type="date"
             value={data.dataRecibo}
             onChange={(e) => updateField("dataRecibo", e.target.value)}
+            className="bg-background/80 backdrop-blur-sm"
           />
         </div>
 
@@ -217,7 +207,7 @@ export const ReceiptInfoForm = memo(function ReceiptInfoForm({ data, onChange }:
             value={data.estadoRecibo}
             onValueChange={handleStateReciboChange}
           >
-            <SelectTrigger>
+            <SelectTrigger className="bg-background/80 backdrop-blur-sm">
               <SelectValue placeholder="Selecione o estado" />
             </SelectTrigger>
             <SelectContent className="bg-background border z-50 max-h-60">
@@ -237,7 +227,7 @@ export const ReceiptInfoForm = memo(function ReceiptInfoForm({ data, onChange }:
             onValueChange={(value) => updateField("cidadeRecibo", value)}
             disabled={!data.estadoRecibo}
           >
-            <SelectTrigger>
+            <SelectTrigger className="bg-background/80 backdrop-blur-sm">
               <SelectValue placeholder="Selecione a cidade" />
             </SelectTrigger>
             <SelectContent className="bg-background border z-50 max-h-60">
