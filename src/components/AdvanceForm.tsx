@@ -13,13 +13,6 @@ interface AdvanceFormProps {
   onChange: (data: AdvanceData) => void;
 }
 
-const formatCurrency = (value: number): string => {
-  return value.toLocaleString("pt-BR", {
-    minimumFractionDigits: 2,
-    maximumFractionDigits: 2,
-  });
-};
-
 export function AdvanceForm({ data, onChange }: AdvanceFormProps) {
   const updateField = (field: keyof AdvanceData, value: string | number) => {
     onChange({ ...data, [field]: value });
@@ -28,7 +21,9 @@ export function AdvanceForm({ data, onChange }: AdvanceFormProps) {
   return (
     <div className="section-card animate-fade-in">
       <div className="flex items-center gap-2 mb-6">
-        <Banknote className="h-5 w-5 text-primary" />
+        <div className="p-2 rounded-lg bg-primary/10">
+          <Banknote className="h-5 w-5 text-primary" />
+        </div>
         <h2 className="text-lg font-semibold text-foreground">Adiantamento</h2>
       </div>
 
@@ -44,6 +39,7 @@ export function AdvanceForm({ data, onChange }: AdvanceFormProps) {
             onChange={(e) =>
               updateField("value", parseFloat(e.target.value) || 0)
             }
+            className="bg-background/80 backdrop-blur-sm"
           />
         </div>
         <div>
@@ -52,6 +48,7 @@ export function AdvanceForm({ data, onChange }: AdvanceFormProps) {
             placeholder="PIX, Transferência, Dinheiro..."
             value={data.paymentMethod}
             onChange={(e) => updateField("paymentMethod", e.target.value)}
+            className="bg-background/80 backdrop-blur-sm"
           />
         </div>
       </div>
@@ -60,17 +57,10 @@ export function AdvanceForm({ data, onChange }: AdvanceFormProps) {
         <label className="form-label">Observações</label>
         <Textarea
           placeholder="Observações sobre o adiantamento..."
-          className="min-h-[100px] resize-none"
+          className="min-h-[100px] resize-none bg-background/80 backdrop-blur-sm"
           value={data.description}
           onChange={(e) => updateField("description", e.target.value)}
         />
-      </div>
-
-      <div className="flex items-center justify-end pt-4 mt-6 border-t border-border">
-        <div className="text-lg font-semibold">
-          Total:{" "}
-          <span className="total-display">R$ {formatCurrency(data.value)}</span>
-        </div>
       </div>
     </div>
   );

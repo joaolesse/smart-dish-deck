@@ -15,8 +15,19 @@ const tabs = [
 ];
 
 export function TabNavigation({ activeTab, onTabChange }: TabNavigationProps) {
+  const activeIndex = tabs.findIndex((t) => t.id === activeTab);
+
   return (
-    <div className="flex border-b border-border bg-card rounded-t-xl overflow-hidden">
+    <div className="relative flex glass-card rounded-xl p-1.5 overflow-hidden">
+      {/* Animated background indicator */}
+      <div
+        className="absolute top-1.5 bottom-1.5 bg-primary/10 rounded-lg transition-all duration-300 ease-out"
+        style={{
+          left: `calc(${(activeIndex / tabs.length) * 100}% + 6px)`,
+          width: `calc(${100 / tabs.length}% - 12px)`,
+        }}
+      />
+      
       {tabs.map((tab) => {
         const Icon = tab.icon;
         const isActive = activeTab === tab.id;
@@ -25,17 +36,17 @@ export function TabNavigation({ activeTab, onTabChange }: TabNavigationProps) {
             key={tab.id}
             onClick={() => onTabChange(tab.id)}
             className={cn(
-              "flex items-center gap-2 px-5 py-4 text-sm font-medium transition-all relative",
+              "flex-1 flex items-center justify-center gap-2 px-4 py-3 text-sm font-medium transition-all duration-200 relative z-10 rounded-lg",
               isActive
                 ? "text-primary"
-                : "text-muted-foreground hover:text-foreground hover:bg-muted/50"
+                : "text-muted-foreground hover:text-foreground"
             )}
           >
-            <Icon className="h-4 w-4" />
+            <Icon className={cn(
+              "h-4 w-4 transition-transform duration-200",
+              isActive && "scale-110"
+            )} />
             <span className="hidden sm:inline">{tab.label}</span>
-            {isActive && (
-              <span className="absolute bottom-0 left-0 right-0 h-0.5 bg-primary" />
-            )}
           </button>
         );
       })}

@@ -1,4 +1,4 @@
-import { useState, useCallback } from "react";
+import { useState, useCallback, useMemo } from "react";
 import { Header } from "@/components/Header";
 import { TabNavigation, TabType } from "@/components/TabNavigation";
 import { ReceiptInfoForm, ReceiptInfo } from "@/components/ReceiptInfoForm";
@@ -6,8 +6,9 @@ import { ServicesSection, ServiceType } from "@/components/ServicesSection";
 import { ValuesSection, ServiceValue } from "@/components/ValuesSection";
 import { ExpensesForm, ExpenseItem } from "@/components/ExpensesForm";
 import { AdvanceForm, AdvanceData } from "@/components/AdvanceForm";
-import { GenerateReceiptButton } from "@/components/GenerateReceiptButton";
+import { StickyTotalBar } from "@/components/StickyTotalBar";
 import { ReceiptPreview } from "@/components/ReceiptPreview";
+import { ReceiptPreviewLive } from "@/components/ReceiptPreviewLive";
 import { useToast } from "@/hooks/use-toast";
 
 const initialReceiptInfo: ReceiptInfo = {
@@ -66,6 +67,23 @@ export default function Index() {
     setReceiptInfo(info);
   }, []);
 
+  const getSubtotal = (expense: ExpenseItem): number => {
+    if (expense.type === "quantity") {
+      return expense.quantity * expense.value;
+    }
+    return expense.value;
+  };
+
+  const total = useMemo(() => {
+    if (activeTab === "diarias") {
+      return serviceValues.reduce((sum, v) => sum + v.quantity * v.value, 0);
+    } else if (activeTab === "despesas") {
+      return expenses.reduce((sum, e) => sum + getSubtotal(e), 0);
+    } else {
+      return advanceData.value;
+    }
+  }, [activeTab, serviceValues, expenses, advanceData.value]);
+
   const handleGenerateReceipt = () => {
     if (!receiptInfo.nomeCompleto.trim()) {
       toast({
@@ -82,38 +100,63 @@ export default function Index() {
     <div className="min-h-screen bg-background">
       <Header />
 
-      <main className="container py-6 md:py-8">
-        <div className="max-w-5xl mx-auto">
-          <TabNavigation activeTab={activeTab} onTabChange={setActiveTab} />
+      <main className="flex flex-col lg:flex-row min-h-[calc(100vh-120px)]">
+        {/* Left Column - Form */}
+        <div className="w-full lg:w-3/5 overflow-y-auto pb-24">
+          <div className="container py-6 md:py-8">
+            <div className="max-w-4xl">
+              <TabNavigation activeTab={activeTab} onTabChange={setActiveTab} />
 
-          <div className="space-y-6 mt-6">
-            <ReceiptInfoForm data={receiptInfo} onChange={handleReceiptInfoChange} />
+              <div className="space-y-6 mt-6">
+                <ReceiptInfoForm data={receiptInfo} onChange={handleReceiptInfoChange} />
 
-            {activeTab === "diarias" && (
-              <>
-                <ServicesSection
-                  selectedServices={selectedServices}
-                  onServicesChange={setSelectedServices}
-                  description={serviceDescription}
-                  onDescriptionChange={setServiceDescription}
-                />
-                <ValuesSection values={serviceValues} onChange={setServiceValues} />
-              </>
-            )}
+                {activeTab === "diarias" && (
+                  <>
+                    <ServicesSection
+                      selectedServices={selectedServices}
+                      onServicesChange={setSelectedServices}
+                      description={serviceDescription}
+                      onDescriptionChange={setServiceDescription}
+                    />
+                    <ValuesSection values={serviceValues} onChange={setServiceValues} />
+                  </>
+                )}
 
-            {activeTab === "despesas" && (
-              <ExpensesForm expenses={expenses} onChange={setExpenses} />
-            )}
+                {activeTab === "despesas" && (
+                  <ExpensesForm expenses={expenses} onChange={setExpenses} />
+                )}
 
-            {activeTab === "adiantamento" && (
-              <AdvanceForm data={advanceData} onChange={setAdvanceData} />
-            )}
-
-            <GenerateReceiptButton onClick={handleGenerateReceipt} />
+                {activeTab === "adiantamento" && (
+                  <AdvanceForm data={advanceData} onChange={setAdvanceData} />
+                )}
+              </div>
+            </div>
           </div>
+        </div>
+
+        {/* Right Column - Live Preview (Desktop only) */}
+        <div className="hidden lg:block w-2/5 bg-muted/30 p-6 sticky top-0 h-[calc(100vh-120px)] overflow-hidden">
+          <ReceiptPreviewLive
+            receiptInfo={receiptInfo}
+            activeTab={activeTab}
+            selectedServices={selectedServices}
+            serviceDescription={serviceDescription}
+            serviceValues={serviceValues}
+            expenses={expenses}
+            advanceData={advanceData}
+          />
         </div>
       </main>
 
+      {/* Sticky Footer */}
+      <StickyTotalBar
+        total={total}
+        onGenerate={handleGenerateReceipt}
+        onPreview={() => setShowPreview(true)}
+        showPreviewButton={true}
+      />
+
+      {/* Modal Preview (for print) */}
       <ReceiptPreview
         open={showPreview}
         onClose={() => setShowPreview(false)}

@@ -31,18 +31,18 @@ export function ValuesSection({ values, onChange }: ValuesSectionProps) {
     );
   };
 
-  const total = values.reduce((sum, v) => sum + v.quantity * v.value, 0);
-
   return (
     <div className="section-card animate-fade-in">
       <div className="flex items-center gap-2 mb-6">
-        <Briefcase className="h-5 w-5 text-primary" />
+        <div className="p-2 rounded-lg bg-primary/10">
+          <Briefcase className="h-5 w-5 text-primary" />
+        </div>
         <h2 className="text-lg font-semibold text-foreground">
           Valores dos Serviços
         </h2>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mb-6">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
         {values.map((item) => {
           const subtotal = item.quantity * item.value;
           return (
@@ -65,6 +65,7 @@ export function ValuesSection({ values, onChange }: ValuesSectionProps) {
                       )
                     }
                     placeholder="0"
+                    className="bg-background/80"
                   />
                 </div>
                 <div>
@@ -82,25 +83,19 @@ export function ValuesSection({ values, onChange }: ValuesSectionProps) {
                       )
                     }
                     placeholder="0,00"
+                    className="bg-background/80"
                   />
                 </div>
               </div>
               <div className="text-sm text-muted-foreground mt-3">
                 Subtotal:{" "}
-                <span className="font-medium text-foreground">
-                  {formatCurrency(subtotal)}
+                <span className="font-medium text-primary">
+                  R$ {formatCurrency(subtotal)}
                 </span>
               </div>
             </div>
           );
         })}
-      </div>
-
-      <div className="flex items-center justify-end pt-4 border-t border-border">
-        <div className="text-lg font-semibold">
-          Total:{" "}
-          <span className="total-display">R$ {formatCurrency(total)}</span>
-        </div>
       </div>
     </div>
   );
