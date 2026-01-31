@@ -217,3 +217,48 @@
     box-shadow: 0 4px 12px hsl(168 76% 32% / 0.3);
   }
 }
+
+/* Print Styles */
+@media print {
+  /* Hide all UI elements */
+  body > *:not([data-radix-portal]) {
+    display: none !important;
+  }
+  
+  /* Hide dialog overlay and buttons */
+  [data-radix-portal] [data-state] > div:first-child,
+  .print\:hidden {
+    display: none !important;
+  }
+  
+  /* Show only the receipt content */
+  [data-radix-portal] {
+    position: static !important;
+  }
+  
+  [data-radix-portal] [role="dialog"] {
+    position: static !important;
+    max-width: none !important;
+    max-height: none !important;
+    width: 100% !important;
+    height: auto !important;
+    padding: 0 !important;
+    margin: 0 !important;
+    border: none !important;
+    box-shadow: none !important;
+    overflow: visible !important;
+    background: white !important;
+  }
+  
+  /* Receipt content styles */
+  #receipt-content {
+    padding: 20mm !important;
+    background: white !important;
+  }
+  
+  /* Page settings */
+  @page {
+    size: A4;
+    margin: 0;
+  }
+}
