@@ -158,7 +158,10 @@ export const ReceiptPreview = memo(function ReceiptPreview({
 
   const getServicesText = () => {
     if (selectedServices.length === 0) return "";
-    return selectedServices.map(s => serviceLabels[s].toUpperCase()).join(" E ");
+    const services = selectedServices.map(s => serviceLabels[s].toUpperCase());
+    if (services.length === 1) return services[0];
+    if (services.length === 2) return `${services[0]} e ${services[1]}`;
+    return `${services.slice(0, -1).join(", ")} e ${services[services.length - 1]}`;
   };
 
   return (
