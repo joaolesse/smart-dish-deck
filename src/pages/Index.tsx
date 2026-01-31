@@ -100,14 +100,14 @@ export default function Index() {
     <div className="min-h-screen bg-background">
       <Header />
 
-      <main className="flex flex-col lg:flex-row min-h-[calc(100vh-120px)]">
+      <main className="flex flex-col xl:flex-row min-h-[calc(100vh-120px)]">
         {/* Left Column - Form */}
-        <div className="w-full lg:w-3/5 overflow-y-auto pb-24">
-          <div className="container py-6 md:py-8">
+        <div className="w-full xl:w-3/5 overflow-y-auto pb-24">
+          <div className="container py-4 sm:py-6 md:py-8 px-4 sm:px-6">
             <div className="max-w-4xl">
               <TabNavigation activeTab={activeTab} onTabChange={setActiveTab} />
 
-              <div className="space-y-6 mt-6">
+              <div className="space-y-4 sm:space-y-6 mt-4 sm:mt-6">
                 <ReceiptInfoForm data={receiptInfo} onChange={handleReceiptInfoChange} />
 
                 {activeTab === "diarias" && (
@@ -135,7 +135,7 @@ export default function Index() {
         </div>
 
         {/* Right Column - Live Preview (Desktop only) */}
-        <div className="hidden lg:block w-2/5 bg-muted/30 p-6 sticky top-0 h-[calc(100vh-120px)] overflow-hidden">
+        <div className="hidden xl:block w-2/5 bg-muted/30 p-4 lg:p-6 sticky top-0 h-[calc(100vh-120px)] overflow-hidden">
           <ReceiptPreviewLive
             receiptInfo={receiptInfo}
             activeTab={activeTab}
